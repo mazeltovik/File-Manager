@@ -7,6 +7,7 @@ type TransformFiles = {
 }[]
 
 export default async function handleLsCommand(curDir:string) {
+    process.stdout.write(` You are currently in ${curDir}\n`);
     let filesFolder = await readdir(curDir);
     let transformFiles = filesFolder.map( async v=>{
         let filePath = resolve(curDir,v);

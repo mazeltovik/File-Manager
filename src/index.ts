@@ -1,13 +1,20 @@
 // Basic Modules
 
 import { EventEmitter } from 'node:events';
-import os from "node:os"
+import os from "node:os";
+import { stat } from 'node:fs/promises';
 
 // Custom Modules
 
-import handleUpCommand from './helpers/handleUpCommand.mjs';
-import handleCdCommand from './helpers/handleCdCommand.mjs';
-import handleLsCommand from './helpers/handleLsCommand.mjs';
+import handleUpCommand from './helpers/handleUpCmd.mjs';
+import handleCdCommand from './helpers/handleCdCmd.mjs';
+import handleLsCommand from './helpers/handleLsCmd.mjs';
+import handleCatCmd from './helpers/handleCatCmd.mjs';
+import handleAddCmd from './helpers/handleAddCmd.mjs';
+import handleRnCmd from './helpers/handleRnCmd.mjs';
+import handleCpCmd from './helpers/handleCpCmd.mjs';
+import handleMvCmd from './helpers/handleMv.Cmd.mjs';
+import handleRmCmd from './helpers/handleRmCmd.mjs';
 
 // Types
 
@@ -43,6 +50,18 @@ class FileManager extends EventEmitter{
             this.emit('cd',command);
         } else if(command == 'ls'){
             this.emit('ls');
+        } else if(command.includes('cat')){
+            this.emit('cat',command);
+        } else if(command.includes('add')){
+            this.emit('add',command)
+        } else if(command.includes('rn')){
+            this.emit('rn',command);
+        } else if(command.includes('cp')){
+            this.emit('cp',command);
+        } else if(command.includes('mv')){
+            this.emit('mv',command);
+        } else if(command.includes('rm')){
+            this.emit('rm',command);
         } else {
             this.emit('unknownOperation');
         }
@@ -59,10 +78,12 @@ fileManager.on('up',()=>{
 
 fileManager.on('cd',(command:string)=>{
     let res = handleCdCommand(fileManager.curDir,command);
-    res.then(path=>{
-        if(path){
+    res.then(async path=>{
+        if ((await stat(path)).isDirectory()) {
             fileManager.curDir = path;
             process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+        } else {
+            process.stdout.write('Operation failed\n')
         }
     }).catch(()=>{
         process.stdout.write('Operation failed\n')
@@ -74,7 +95,38 @@ fileManager.on('ls',async ()=>{
     handleLsCommand(fileManager.curDir);
 })
 
+fileManager.on('cat',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleCatCmd(fileManager.curDir,command);
+})
+
+fileManager.on('add',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleAddCmd(fileManager.curDir,command);
+})
+
+fileManager.on('rn',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleRnCmd(fileManager.curDir,command);
+})
+
+fileManager.on('cp',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleCpCmd(fileManager.curDir,command);
+})
+
+fileManager.on('mv',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleMvCmd(fileManager.curDir,command);
+})
+
+fileManager.on('rm',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleRmCmd(fileManager.curDir,command);
+})
+
 fileManager.on('unknownOperation',()=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
     process.stdout.write('Invalid input\n');
 })
 
