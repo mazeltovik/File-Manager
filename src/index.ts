@@ -2,13 +2,12 @@
 
 import { EventEmitter } from 'node:events';
 import os from "node:os"
-import { readdir } from 'node:fs/promises';
 
 // Custom Modules
 
-import handleUpCommand from './helpers/handleUpCommand.js';
-import handleCdCommand from './helpers/handleCdCommand.js';
-import handleLsCommand from './helpers/handleLsCommand.js';
+import handleUpCommand from './helpers/handleUpCommand.mjs';
+import handleCdCommand from './helpers/handleCdCommand.mjs';
+import handleLsCommand from './helpers/handleLsCommand.mjs';
 
 // Types
 
