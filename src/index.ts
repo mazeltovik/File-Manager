@@ -15,6 +15,7 @@ import handleRnCmd from './helpers/handleRnCmd.mjs';
 import handleCpCmd from './helpers/handleCpCmd.mjs';
 import handleMvCmd from './helpers/handleMv.Cmd.mjs';
 import handleRmCmd from './helpers/handleRmCmd.mjs';
+import handleOsCmd from './helpers/handleOsCmd.mjs';
 
 // Types
 
@@ -32,6 +33,7 @@ class FileManager extends EventEmitter{
     initDefaultSettings(){
         let [userName] = process.argv.filter(v=>v.match(/-username=\w+/g));
         this.name = (userName)? userName.split('=')[1] : 'default';
+        this.setMaxListeners(12);
     }
     initInputOperations(){
         process.stdin.setEncoding('utf8');
@@ -46,22 +48,24 @@ class FileManager extends EventEmitter{
         let command = input.trim();
         if(command == 'up'){
             this.emit('up');
-        } else if(command.includes('cd')){
+        } else if(command.startsWith('cd')){
             this.emit('cd',command);
         } else if(command == 'ls'){
             this.emit('ls');
-        } else if(command.includes('cat')){
+        } else if(command.startsWith('cat')){
             this.emit('cat',command);
-        } else if(command.includes('add')){
+        } else if(command.startsWith('add')){
             this.emit('add',command)
-        } else if(command.includes('rn')){
+        } else if(command.startsWith('rn')){
             this.emit('rn',command);
-        } else if(command.includes('cp')){
+        } else if(command.startsWith('cp')){
             this.emit('cp',command);
-        } else if(command.includes('mv')){
+        } else if(command.startsWith('mv')){
             this.emit('mv',command);
-        } else if(command.includes('rm')){
+        } else if(command.startsWith('rm')){
             this.emit('rm',command);
+        } else if(command.startsWith('os')){
+            this.emit('os',command);
         } else {
             this.emit('unknownOperation');
         }
@@ -123,6 +127,11 @@ fileManager.on('mv',(command:string)=>{
 fileManager.on('rm',(command:string)=>{
     process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
     handleRmCmd(fileManager.curDir,command);
+})
+
+fileManager.on('os',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleOsCmd(command);
 })
 
 fileManager.on('unknownOperation',()=>{
