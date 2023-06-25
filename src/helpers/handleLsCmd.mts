@@ -1,10 +1,7 @@
 import { readdir, stat } from 'node:fs/promises';
 import {resolve} from 'node:path'
+import { TransformFiles } from '../types/types';
 
-type TransformFiles = {
-    name: string;
-    type: string;
-}[]
 
 export default async function handleLsCommand(curDir:string) {
     process.stdout.write(` You are currently in ${curDir}\n`);

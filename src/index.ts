@@ -16,16 +16,18 @@ import handleCpCmd from './helpers/handleCpCmd.mjs';
 import handleMvCmd from './helpers/handleMv.Cmd.mjs';
 import handleRmCmd from './helpers/handleRmCmd.mjs';
 import handleOsCmd from './helpers/handleOsCmd.mjs';
-import handleHashCmd from './helpers/handleHashCmd.mjs'
+import handleHashCmd from './helpers/handleHashCmd.mjs';
+import handleCompressCmd from './helpers/handleCompressCmd.mjs';
+import handleDecompressCmd from './helpers/handleDecompress.mjs';
 
 // Types
 
+import { IFileManager } from './types/types';
 
 
 
 
-
-class FileManager extends EventEmitter{
+class FileManager extends EventEmitter implements IFileManager {
     constructor(public curDir:string,public name?:string,){
         super();
         this.initDefaultSettings();
@@ -34,7 +36,7 @@ class FileManager extends EventEmitter{
     initDefaultSettings(){
         let [userName] = process.argv.filter(v=>v.match(/-username=\w+/g));
         this.name = (userName)? userName.split('=')[1] : 'default';
-        this.setMaxListeners(12);
+        this.setMaxListeners(15);
     }
     initInputOperations(){
         process.stdin.setEncoding('utf8');
@@ -43,6 +45,10 @@ class FileManager extends EventEmitter{
                 this.check(input.toString());
             }
         });
+        process.on('SIGINT',()=>{
+            console.log(`Thank you for using File Manager, ${this.name}, goodbye!\n`);
+            process.exit(0);
+        })
         process.stdout.write(`Welcome to the File Manager, ${this.name}!\nYou are currently in ${this.curDir}\n`)
     } 
     check(input:string){
@@ -69,6 +75,13 @@ class FileManager extends EventEmitter{
             this.emit('os',command);
         } else if(command.startsWith('hash')){
             this.emit('hash',command);
+        } else if(command.startsWith('compress')){
+            this.emit('compress',command);
+        } else if(command.startsWith('decompress')){
+            this.emit('decompress',command);
+        } else if(command == '.exit'){
+            console.log(`Thank you for using File Manager, ${this.name}, goodbye!\n`);
+            process.exit(0);
         } else {
             this.emit('unknownOperation');
         }
@@ -142,12 +155,22 @@ fileManager.on('hash',(command:string)=>{
     handleHashCmd(fileManager.curDir,command);
 })
 
+fileManager.on('compress',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleCompressCmd(fileManager.curDir,command);
+})
+
+fileManager.on('decompress',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleDecompressCmd(fileManager.curDir,command);
+})
+
+
+
 fileManager.on('unknownOperation',()=>{
     process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
     process.stdout.write('Invalid input\n');
 })
 
-fileManager.on('end',()=>{
-    process.exit(1);
-})
+
 
