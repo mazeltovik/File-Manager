@@ -25,8 +25,7 @@ export default function handleOsCmd(command:string){
             default:
                 process.stdout.write('Operation failed\n');
         }
-    }
-    
+    }    
 }
 
 function helperForCpus(){

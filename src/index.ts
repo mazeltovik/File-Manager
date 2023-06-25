@@ -16,6 +16,7 @@ import handleCpCmd from './helpers/handleCpCmd.mjs';
 import handleMvCmd from './helpers/handleMv.Cmd.mjs';
 import handleRmCmd from './helpers/handleRmCmd.mjs';
 import handleOsCmd from './helpers/handleOsCmd.mjs';
+import handleHashCmd from './helpers/handleHashCmd.mjs'
 
 // Types
 
@@ -66,6 +67,8 @@ class FileManager extends EventEmitter{
             this.emit('rm',command);
         } else if(command.startsWith('os')){
             this.emit('os',command);
+        } else if(command.startsWith('hash')){
+            this.emit('hash',command);
         } else {
             this.emit('unknownOperation');
         }
@@ -132,6 +135,11 @@ fileManager.on('rm',(command:string)=>{
 fileManager.on('os',(command:string)=>{
     process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
     handleOsCmd(command);
+})
+
+fileManager.on('hash',(command:string)=>{
+    process.stdout.write(` You are currently in ${fileManager.curDir}\n`);
+    handleHashCmd(fileManager.curDir,command);
 })
 
 fileManager.on('unknownOperation',()=>{

@@ -3,16 +3,18 @@ import {isAbsolute, resolve} from 'node:path'
 
 export default async function handleCdCommand(curDir:string,input:string){
     let path = '';
-    if(input.includes('cd')){
+    if(input.startsWith('cd')){
         path = input.slice(2,input.length).trim();
-    } else if(input.includes('cat')){
+    } 
+    if(input.startsWith('cat')){
         path = input.slice(3,input.length).trim();
-    } else if(input.includes('rm')){
+    } 
+    if(input.startsWith('rm')){
         path = input.slice(2,input.length).trim();
-    } else {
-        
     }
-    
+    if(input.startsWith('hash')){
+        path = input.slice(4,input.length).trim();
+    } 
     if(isAbsolute(path)){
             return access(path).then(()=>Promise.resolve(path))
     } else {
